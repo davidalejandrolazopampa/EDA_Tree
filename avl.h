@@ -18,6 +18,7 @@ public:
 };
 
 class avl {
+
 public:
 
 };
@@ -240,5 +241,17 @@ void print_preOrder(Node *root) {
     }
 }
 
+
+
+void print_tree(Node* root, int nro=0)
+{
+    int i;
+    if(root==NULL)return;
+    print_tree(root->right,nro+4);
+    for(i=0;i<nro;i++)
+        cout<<" ";
+    cout<<root->key<<endl;
+    print_tree(root->left,nro+4);
+}
 
 #endif //EDA_TREE_AVL_H
