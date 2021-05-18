@@ -16,13 +16,13 @@ int main() {
 
     cout << "Preorder traversal of the "
             "constructed AVL tree is \n";
-    print_preOrder(root);
+    print_tree(root);
 
     root = deleteNode(root, 0);
 
     cout << "\nPreorder traversal after"
-         << " deletion of 10 \n";
-    print_preOrder(root);
+         << " deletion of 0 \n";
+    print_tree(root);
 
     return 0;
 }
