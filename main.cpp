@@ -1,12 +1,9 @@
 
-using namespace std;
-
-#include "avl.h";
+#include "avl.h"
 
 int main() {
     Node *root = nullptr;
 
-    /* Constructing tree given in the above figure */
     root = insert(root, 9);
     root = insert(root, 5);
     root = insert(root, 10);
@@ -19,13 +16,13 @@ int main() {
 
     cout << "Preorder traversal of the "
             "constructed AVL tree is \n";
-    preOrder(root);
+    print_preOrder(root);
 
-    root = deleteNode(root, 10);
+    root = deleteNode(root, 0);
 
     cout << "\nPreorder traversal after"
          << " deletion of 10 \n";
-    preOrder(root);
+    print_preOrder(root);
 
     return 0;
 }

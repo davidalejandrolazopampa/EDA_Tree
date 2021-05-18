@@ -7,6 +7,8 @@
 
 #include<bits/stdc++.h>
 
+using namespace std;
+
 class Node {
 public:
     int key;
@@ -15,8 +17,11 @@ public:
     int height;
 };
 
-// A utility function to get maximum
-// of two integers
+class avl {
+public:
+
+};
+
 int max(int a, int b);
 
 int height(Node *N) {
@@ -34,22 +39,16 @@ int max(int a, int b) {
     }
 }
 
-/* Helper function that allocates a
-new node with the given key and
-NULL left and right pointers. */
 Node *newNode(int key) {
     Node *node = new Node();
     node->key = key;
-    node->left = NULL;
-    node->right = NULL;
+    node->left = nullptr;
+    node->right = nullptr;
     node->height = 1; // new node is initially
     // added at leaf
     return (node);
 }
 
-// A utility function to right
-// rotate subtree rooted with y
-// See the diagram given above.
 Node *rightRotation(Node *y) {
     Node *x = y->left;
     Node *T2 = x->right;
@@ -59,18 +58,13 @@ Node *rightRotation(Node *y) {
     y->left = T2;
 
     // Update heights
-    y->height = max(height(y->left),
-                    height(y->right)) + 1;
-    x->height = max(height(x->left),
-                    height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
 
+    x->height = max(height(x->left), height(x->right)) + 1;
     // Return new root
     return x;
 }
 
-// A utility function to left
-// rotate subtree rooted with x
-// See the diagram given above.
 Node *leftRotation(Node *x) {
     Node *y = x->right;
     Node *T2 = y->left;
@@ -90,7 +84,7 @@ Node *leftRotation(Node *x) {
 
 // Get Balance factor of node N
 int getBalance(Node *N) {
-    if (N == NULL)
+    if (N == nullptr)
         return 0;
 
     return height(N->left) - height(N->right);
@@ -115,7 +109,6 @@ Node *insert(Node *node, int key) {
     int balance = getBalance(node);
 
     // When unbalanced
-
     // Case 1: Left Left Case
     if (balance > 1 && key < node->left->key)
         return rightRotation(node);
@@ -148,20 +141,16 @@ Node *minValueNode(Node *node) {
     Node *current = node;
 
     /* loop down to find the leftmost leaf */
-    while (current->left != NULL)
+    while (current->left != nullptr)
         current = current->left;
 
     return current;
 }
 
-// Recursive function to delete a node
-// with given key from subtree with
-// given root. It returns root of the
-// modified subtree.
 Node *deleteNode(Node *root, int key) {
 
-    // STEP 1: PERFORM STANDARD BST DELETE
-    if (root == NULL)
+    // BST deletion
+    if (root == nullptr)
         return root;
 
     // If the key to be deleted is smaller
@@ -180,14 +169,14 @@ Node *deleteNode(Node *root, int key) {
         // This is the node to be deleted
     else {
         // node with only one child or no child
-        if ((root->left == NULL) || (root->right == NULL)) {
+        if ((root->left == nullptr) || (root->right == nullptr)) {
 
             Node *temp = root->left ? root->left : root->right;
 
             // No child case
-            if (temp == NULL) {
+            if (temp == nullptr) {
                 temp = root;
-                root = NULL;
+                root = nullptr;
             } else // One child case
                 *root = *temp; // Copy the contents of
             // the non-empty child
@@ -200,7 +189,6 @@ Node *deleteNode(Node *root, int key) {
             // Copy the inorder successor's
             // data to this node
             root->key = temp->key;
-
             // Delete the inorder successor
             root->right = deleteNode(root->right, temp->key);
         }
@@ -208,16 +196,14 @@ Node *deleteNode(Node *root, int key) {
 
     // If the tree had only one node
     // then return
-    if (root == NULL)
+    if (root == nullptr)
         return root;
 
     // STEP 2: UPDATE HEIGHT OF THE CURRENT NODE
-    root->height = 1 + max(height(root->left),
-                           height(root->right));
+    root->height = 1 + max(height(root->left), height(root->right));
 
     // STEP 3: GET THE BALANCE FACTOR OF
-    // THIS NODE (to check whether this
-    // node became unbalanced)
+    // THIS NODE (to check whether this node became unbalanced)
     int balance = getBalance(root);
 
     // If this node becomes unbalanced,
@@ -246,15 +232,11 @@ Node *deleteNode(Node *root, int key) {
     return root;
 }
 
-// A utility function to print preorder
-// traversal of the tree.
-// The function also prints height
-// of every node
-void preOrder(Node *root) {
+void print_preOrder(Node *root) {
     if (root != nullptr) {
         cout << root->key << " ";
-        preOrder(root->left);
-        preOrder(root->right);
+        print_preOrder(root->left);
+        print_preOrder(root->right);
     }
 }
 
