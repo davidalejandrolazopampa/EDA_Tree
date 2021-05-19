@@ -229,7 +229,6 @@ Node *deleteNode(Node *root, int key) {
         root->right = rightRotation(root->right);
         return leftRotation(root);
     }
-
     return root;
 }
 
@@ -240,8 +239,6 @@ void print_preOrder(Node *root) {
         print_preOrder(root->right);
     }
 }
-
-
 
 void print_tree(Node* root, int nro=0)
 {
