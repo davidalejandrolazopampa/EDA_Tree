@@ -98,7 +98,7 @@ Node *insert(Node *node, int key) {
 
     if (key < node->key)
         node->left = insert(node->left, key);
-    else if (key > node->key)
+    else if (key >= node->key)
         node->right = insert(node->right, key);
     else // Equal keys not allowed
         return node;
