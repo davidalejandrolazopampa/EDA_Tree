@@ -23,6 +23,8 @@ void profe_test() {
     rang.insert(37);
     cout << endl;
     rang.print_preOrder();
+    cout << " \nleaves "<<endl;
+    rang.print_leaf();
 }
 
 int main() {

@@ -21,7 +21,6 @@ class rangeTree {
 
 public:
     Node *root = nullptr;
-    bool doRotation;
 
     rangeTree() {
         root = nullptr;
@@ -39,6 +38,10 @@ public:
         this->_print_tree(this->root);
     }
 
+    void print_leaf() {
+        this->_print_leaf(this->root);
+    }
+
 private:
     Node *newNode(int key) {
         Node *node = new Node();
@@ -46,7 +49,6 @@ private:
         node->left = nullptr;
         node->right = nullptr;
         node->height = 1; // new node is initially
-        // added at leaf
         return (node);
     }
 
@@ -63,6 +65,7 @@ private:
 
         x->height = max(height(x->left), height(x->right)) + 1;
         // Return new root
+
         return x;
     }
 
@@ -274,6 +277,17 @@ found in that tree. Note that the entire tree does not need to be searched. */
             cout << " ";
         cout << root->key << endl;
         _print_tree(root->left, nro + 4);
+    }
+
+    void _print_leaf(Node *node) {
+
+        if (node != nullptr) {
+            if(node->height == 1)
+                cout << node->key << " ";
+
+            _print_leaf(node->left);
+            _print_leaf(node->right);
+        }
     }
 };
 
