@@ -113,10 +113,14 @@ private:
         if (key < node->key) {
             node->left = this->_insert(node->left, key);
 
-            node->left->left = newNode(key);
-            node->left->height = 2;
-            node->height = 3;
-            //node->height = 1 + max(height(node->left), height(node->right));
+            //node->left->left = newNode(key);
+            if(node->left->left == nullptr)
+                node->left->left = newNode(key);
+
+            //node->left->height = 2;
+            node->left->height = 1 + max(height(node->left->left), height(node->left->right));
+            //node->height = 3;
+            node->height = 1 + max(height(node->left), height(node->right));
 
         } else if (key >= node->key) {
             node->right = this->_insert(node->right, key);
