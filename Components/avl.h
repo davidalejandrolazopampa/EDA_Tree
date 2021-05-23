@@ -9,11 +9,11 @@
 
 using namespace std;
 
-class Node {
+class Node1D {
 public:
     int key;
-    Node *left;
-    Node *right;
+    Node1D *left;
+    Node1D *right;
     int height;
 };
 
@@ -25,7 +25,7 @@ public:
 
 int max(int a, int b);
 
-int height(Node *N) {
+int height(Node1D *N) {
     if (N == NULL)
         return 0;
 
@@ -40,8 +40,8 @@ int max(int a, int b) {
     }
 }
 
-Node *newNode(int key) {
-    Node *node = new Node();
+Node1D *newNode(int key) {
+    Node1D *node = new Node1D();
     node->key = key;
     node->left = nullptr;
     node->right = nullptr;
@@ -50,9 +50,9 @@ Node *newNode(int key) {
     return (node);
 }
 
-Node *rightRotation(Node *y) {
-    Node *x = y->left;
-    Node *T2 = x->right;
+Node1D *rightRotation(Node1D *y) {
+    Node1D *x = y->left;
+    Node1D *T2 = x->right;
 
     // Perform rotation
     x->right = y;
@@ -66,9 +66,9 @@ Node *rightRotation(Node *y) {
     return x;
 }
 
-Node *leftRotation(Node *x) {
-    Node *y = x->right;
-    Node *T2 = y->left;
+Node1D *leftRotation(Node1D *x) {
+    Node1D *y = x->right;
+    Node1D *T2 = y->left;
 
     // Perform rotation
     y->left = x;
@@ -84,14 +84,14 @@ Node *leftRotation(Node *x) {
 }
 
 // Get Balance factor of node N
-int getBalance(Node *N) {
+int getBalance(Node1D *N) {
     if (N == nullptr)
         return 0;
 
     return height(N->left) - height(N->right);
 }
 
-Node *insert(Node *node, int key) {
+Node1D *insert(Node1D *node, int key) {
     // Normal BST rotation
     if (node == nullptr)
         return (newNode(key));
@@ -138,8 +138,8 @@ Node *insert(Node *node, int key) {
 return the node with minimum key value
 found in that tree. Note that the entire
 tree does not need to be searched. */
-Node *minValueNode(Node *node) {
-    Node *current = node;
+Node1D *minValueNode(Node1D *node) {
+    Node1D *current = node;
 
     /* loop down to find the leftmost leaf */
     while (current->left != nullptr)
@@ -148,7 +148,7 @@ Node *minValueNode(Node *node) {
     return current;
 }
 
-Node *deleteNode(Node *root, int key) {
+Node1D *deleteNode(Node1D *root, int key) {
 
     // BST deletion
     if (root == nullptr)
@@ -172,7 +172,7 @@ Node *deleteNode(Node *root, int key) {
         // node with only one child or no child
         if ((root->left == nullptr) || (root->right == nullptr)) {
 
-            Node *temp = root->left ? root->left : root->right;
+            Node1D *temp = root->left ? root->left : root->right;
 
             // No child case
             if (temp == nullptr) {
@@ -185,7 +185,7 @@ Node *deleteNode(Node *root, int key) {
         } else {
             // node with two children: Get the inorder
             // successor (smallest in the right subtree)
-            Node *temp = minValueNode(root->right);
+            Node1D *temp = minValueNode(root->right);
 
             // Copy the inorder successor's
             // data to this node
@@ -232,7 +232,7 @@ Node *deleteNode(Node *root, int key) {
     return root;
 }
 
-void print_preOrder(Node *root) {
+void print_preOrder(Node1D *root) {
     if (root != nullptr) {
         cout << root->key << " ";
         print_preOrder(root->left);
@@ -240,7 +240,7 @@ void print_preOrder(Node *root) {
     }
 }
 
-void print_tree(Node* root, int nro=0)
+void print_tree(Node1D* root, int nro=0)
 {
     int i;
     if(root==NULL)return;

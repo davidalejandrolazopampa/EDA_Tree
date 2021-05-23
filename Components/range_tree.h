@@ -9,25 +9,43 @@
 
 using namespace std;
 
-class Node {
+typedef pair<int, int> coordinate;
+
+class Node1D {
 public:
     int key;
-    Node *left;
-    Node *right;
+    Node1D *left;
+    Node1D *right;
     int height;
+    coordinate data;
+
+    static Node1D *newNode(int key, coordinate data) {
+        Node1D *node = new Node1D();
+        node->key = key;
+        node->data = data;
+        node->left = nullptr;
+        node->right = nullptr;
+        node->height = 1; // new node is initially
+        return (node);
+    }
 };
 
 class rangeTree {
 
 public:
-    Node *root = nullptr;
+    Node1D *root = nullptr;
 
     rangeTree() {
         root = nullptr;
     }
 
-    void insert(int key) {
-        this->root = _insert(this->root, key);
+    void insert(int key, coordinate data) {
+        this->root = _insert(this->root, key, data);
+    }
+
+    void search1Drange(int begin, int end) {
+
+        this->one_d_range_query(begin, end);
     }
 
     void print_preOrder() {
@@ -43,24 +61,62 @@ public:
     }
 
 private:
-    Node *newNode(int key) {
-        Node *node = new Node();
-        node->key = key;
-        node->left = nullptr;
-        node->right = nullptr;
-        node->height = 1; // new node is initially
-        return (node);
+
+    void one_d_range_query(int begin, int end) {
+        auto splitNode = this->find_split_node(begin, end);
+
+        if (splitNode->height == 1) {//leaf
+            if(begin <= splitNode->key && splitNode->key <= end)
+                cout << splitNode->key << endl;
+
+        } else {
+            auto nodeTmp = splitNode->left;
+            while (nodeTmp->height != 1) {
+                if( begin <= nodeTmp->key) {
+                    this->_print_leaf(nodeTmp->right, true);
+                    nodeTmp = nodeTmp->left;
+                } else {
+                    nodeTmp = nodeTmp->right;
+                }
+            }
+            if(begin <= nodeTmp->key && nodeTmp->key <= end)
+                cout << nodeTmp->key << endl;
+
+            nodeTmp = splitNode->right;
+            while (nodeTmp->height != 1) {
+                if( nodeTmp->key <= end) {
+                    this->_print_leaf(nodeTmp->left, true);
+                    nodeTmp = nodeTmp->right;
+                } else {
+                    nodeTmp = nodeTmp->left;
+                }
+            }
+            if(begin <= nodeTmp->key && nodeTmp->key <= end)
+                cout << nodeTmp->key << endl;
+        }
     }
 
-    Node *rightRotation(Node *y) {
-        Node *x = y->left;
-        Node *T2 = x->right;
+    Node1D *find_split_node(int begin, int end) {
+        auto nodeTmp = this->root;
+
+        while (nodeTmp->height != 1 && (end <= nodeTmp->key || begin > nodeTmp->key)) {
+            if (end <= nodeTmp->key)
+                nodeTmp = nodeTmp->left;
+            else
+                nodeTmp = nodeTmp->right;
+        }
+
+        return nodeTmp;
+    }
+
+    Node1D *rightRotation(Node1D *y) {
+        Node1D *x = y->left;
+        Node1D *T2 = x->right;
 
         // Perform rotation
         x->right = y;
         y->left = T2;
 
-        // Update heights
         y->height = max(height(y->left), height(y->right)) + 1;
 
         x->height = max(height(x->left), height(x->right)) + 1;
@@ -69,9 +125,9 @@ private:
         return x;
     }
 
-    Node *leftRotation(Node *x) {
-        Node *y = x->right;
-        Node *T2 = y->left;
+    Node1D *leftRotation(Node1D *x) {
+        Node1D *y = x->right;
+        Node1D *T2 = y->left;
 
         // Perform rotation
         y->left = x;
@@ -86,7 +142,7 @@ private:
         return y;
     }
 
-    int height(Node *N) {
+    int height(Node1D *N) {
         if (N == NULL)
             return 0;
 
@@ -101,24 +157,24 @@ private:
         }
     }
 
-    int getBalance(Node *N) {
+    int getBalance(Node1D *N) {
         if (N == nullptr)
             return 0;
 
         return height(N->left) - height(N->right);
     }
 
-    Node *_insert(Node *node, int key) {
+    Node1D *_insert(Node1D *node, int key, coordinate data) {
         // Normal BST rotation
         if (node == nullptr)
-            return (newNode(key));
+            return (Node1D::newNode(key, data));
 
         if (key < node->key) {
-            node->left = this->_insert(node->left, key);
+            node->left = this->_insert(node->left, key, data);
 
             //node->left->left = newNode(key);
-            if(node->left->left == nullptr)
-                node->left->left = newNode(key);
+            if (node->left->left == nullptr)
+                node->left->left = Node1D::newNode(key, data);
 
             //node->left->height = 2;
             node->left->height = 1 + max(height(node->left->left), height(node->left->right));
@@ -126,15 +182,13 @@ private:
             node->height = 1 + max(height(node->left), height(node->right));
 
         } else if (key >= node->key) {
-            node->right = this->_insert(node->right, key);
+            node->right = this->_insert(node->right, key, data);
 
-            if(node->left == nullptr)                   //for range tree
-                node->left = newNode(node->key);
+            if (node->left == nullptr)                   //for range tree
+                node->left = Node1D::newNode(node->key, data);
 
             node->height = 1 + max(height(node->left), height(node->right));
         }
-        //else // Equal keys not allowed
-        //    return node;
 
         // Get the balance factor of this ancestor node to check whether this node became unbalanced
         int balance = getBalance(node);
@@ -161,14 +215,12 @@ private:
             return leftRotation(node);
         }
 
-        /* return the (unchanged) node pointer */
         return node;
     }
 
-/* Given a non-empty binary search tree, return the node with minimum key value
-found in that tree. Note that the entire tree does not need to be searched. */
-    Node *minValueNode(Node *node) {
-        Node *current = node;
+    // Note that the entire tree does not need to be searched.
+    Node1D *minValueNode(Node1D *node) {
+        Node1D *current = node;
 
         /* loop down to find the leftmost leaf */
         while (current->left != nullptr)
@@ -177,7 +229,7 @@ found in that tree. Note that the entire tree does not need to be searched. */
         return current;
     }
 
-    Node *_deleteNode(Node *root, int key) {
+    Node1D *_deleteNode(Node1D *root, int key) {
 
         // BST deletion
         if (root == nullptr)
@@ -201,7 +253,7 @@ found in that tree. Note that the entire tree does not need to be searched. */
             // node with only one child or no child
             if ((root->left == nullptr) || (root->right == nullptr)) {
 
-                Node *temp = root->left ? root->left : root->right;
+                Node1D *temp = root->left ? root->left : root->right;
 
                 // No child case
                 if (temp == nullptr) {
@@ -214,7 +266,7 @@ found in that tree. Note that the entire tree does not need to be searched. */
             } else {
                 // node with two children: Get the inorder
                 // successor (smallest in the right subtree)
-                Node *temp = minValueNode(root->right);
+                Node1D *temp = minValueNode(root->right);
 
                 // Copy the inorder successor's
                 // data to this node
@@ -261,7 +313,7 @@ found in that tree. Note that the entire tree does not need to be searched. */
         return root;
     }
 
-    void _print_preOrder(Node *root) {
+    void _print_preOrder(Node1D *root) {
         if (root != nullptr) {
             cout << root->key << " ";
             _print_preOrder(root->left);
@@ -269,7 +321,7 @@ found in that tree. Note that the entire tree does not need to be searched. */
         }
     }
 
-    void _print_tree(Node *root, int nro = 0) {
+    void _print_tree(Node1D *root, int nro = 0) {
         int i;
         if (root == NULL)return;
         _print_tree(root->right, nro + 4);
@@ -279,14 +331,17 @@ found in that tree. Note that the entire tree does not need to be searched. */
         _print_tree(root->left, nro + 4);
     }
 
-    void _print_leaf(Node *node) {
+    void _print_leaf(Node1D *node, bool new_line=false) {
 
         if (node != nullptr) {
-            if(node->height == 1)
-                cout << node->key << " ";
+            if (node->height == 1)
+                if(new_line)
+                    cout << "("<< node->data.first << "," << node->data.second << ")"<< endl;
+                else
+                    cout << "("<< node->data.first << ","<<node->data.second << ")" << " ";
 
-            _print_leaf(node->left);
-            _print_leaf(node->right);
+            _print_leaf(node->left, new_line);
+            _print_leaf(node->right, new_line);
         }
     }
 };
