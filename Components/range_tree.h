@@ -336,9 +336,9 @@ private:
         if (node != nullptr) {
             if (node->height == 1)
                 if(new_line)
-                    cout << "("<< node->data.first << "," << node->data.second << ")"<< endl;
+                    cout << node->data.first << " " << node->data.second << endl;
                 else
-                    cout << "("<< node->data.first << ","<<node->data.second << ")" << " ";
+                    cout << node->data.first << " "<<node->data.second << " ";
 
             _print_leaf(node->left, new_line);
             _print_leaf(node->right, new_line);

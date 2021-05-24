@@ -2,6 +2,7 @@
 //#include "avl.h"
 //#include "range_tree.h"
 #include "Components/two_d_range_tree.h"
+#include "datatest/tester.h"
 
 void profe_test() {
     rangeTree rang;
@@ -70,8 +71,8 @@ int main() {
     //rang.print_tree();
 
     //profe_test();
-
-    profe_test2d();
+    //profe_test2d();
+    tester::process("../datatest/dataset100.txt");
 
     return 0;
 }

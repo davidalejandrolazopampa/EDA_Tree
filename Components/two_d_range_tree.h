@@ -42,7 +42,7 @@ public:
 
         if (splitNode->height == 1) {//leaf
             if(xbegin <= splitNode->data.first && splitNode->data.first <= xend)
-                cout << "("<< splitNode->data.first << "," << splitNode->data.second << ")"<< endl;
+                cout << splitNode->data.first << " " << splitNode->data.second << endl;
         } else {
             auto nodeTmp = splitNode->left;
             while (nodeTmp->height != 1) {
@@ -58,7 +58,7 @@ public:
             }
             if(xbegin <= nodeTmp->data.first && nodeTmp->data.first <= xend
             && ybegin <= nodeTmp->data.second && nodeTmp->data.second <= yend )
-                cout << "("<< nodeTmp->data.first << "," << nodeTmp->data.second << ")"<< endl;
+                cout << nodeTmp->data.first << " " << nodeTmp->data.second << endl;
 
             nodeTmp = splitNode->right;
             while (nodeTmp->height != 1) {
@@ -74,7 +74,7 @@ public:
             }
             if(xbegin <= nodeTmp->data.first && nodeTmp->data.first <= xend
             && ybegin <= nodeTmp->data.second && nodeTmp->data.second <= yend)
-                cout << "("<< nodeTmp->data.first << "," << nodeTmp->data.second << ")"<< endl;
+                cout << nodeTmp->data.first << " " << nodeTmp->data.second << endl;
         }
     }
 
@@ -87,21 +87,6 @@ public:
     }
 
 private:
-    int find_x_median(vector<coordinate> points) {
-        auto points_tmp = points;
-        sort(points_tmp.begin(), points_tmp.end());
-        auto n = points_tmp.size();
-
-        if (n % 2) {
-            return (points_tmp.at(n / 2)).first;
-        } else {
-            auto n_1 = points_tmp.at((n - 1) / 2);
-            auto n_plus_1 = points_tmp.at((n + 1) / 2);
-
-            return ((n_1.first + n_plus_1.first) / 2);
-        }
-    }
-
     Node2D *find_split_node(int begin, int end) {
         auto nodeTmp = this->root;
 
@@ -165,6 +150,21 @@ private:
 
             _print_leaf(node->left, new_line);
             _print_leaf(node->right, new_line);
+        }
+    }
+
+    int find_x_median(vector<coordinate> points) {
+        auto points_tmp = points;
+        sort(points_tmp.begin(), points_tmp.end());
+        auto n = points_tmp.size();
+
+        if (n % 2) {
+            return (points_tmp.at(n / 2)).first;
+        } else {
+            auto n_1 = points_tmp.at((n - 1) / 2);
+            auto n_plus_1 = points_tmp.at((n + 1) / 2);
+
+            return ((n_1.first + n_plus_1.first) / 2);
         }
     }
 };
