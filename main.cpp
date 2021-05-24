@@ -47,8 +47,8 @@ void profe_test2d() {
 
 void test_100_1000()
 {
-    tester::process("../datatest/dataset100.txt");
-    //tester::process("../datatest/dataset1000.txt");
+    //tester::process("../datatest/dataset100.txt");
+    tester::process("../datatest/dataset1000.txt");
 }
 int main() {
     //profe_test();

@@ -208,8 +208,6 @@ private:
     }
 
     int find_x_median(vector<coordinate> points) {
-        //auto points_tmp = points;
-        //sort(points_tmp.begin(), points_tmp.end(), cmpCoordinateX);
 
         int n_1;
         int n_plus_1;
