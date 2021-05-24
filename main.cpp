@@ -53,6 +53,6 @@ void test_100_1000()
 int main() {
     //profe_test();
     //profe_test2d();
-    //test_100_1000();
+    test_100_1000();
     return 0;
 }
