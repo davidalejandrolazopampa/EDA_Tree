@@ -43,9 +43,9 @@ public:
         this->root = _insert(this->root, key, data);
     }
 
-    void search1Drange(int begin, int end) {
+    vector<coordinate> search1Drange(int begin, int end) {
 
-        this->one_d_range_query(begin, end);
+        return this->one_d_range_query(begin, end);
     }
 
     void print_preOrder() {
@@ -56,44 +56,60 @@ public:
         this->_print_tree(this->root);
     }
 
-    void print_leaf() {
-        this->_print_leaf(this->root);
+    vector<coordinate> print_leaf() {
+        return this->_print_leaf(this->root);
     }
 
 private:
 
-    void one_d_range_query(int begin, int end) {
-        auto splitNode = this->find_split_node(begin, end);
+    vector<coordinate> one_d_range_query(int x_begin, int x_end) {
+        vector<coordinate> result;
+
+        auto splitNode = this->find_split_node(x_begin, x_end);
+
+        result.clear();
 
         if (splitNode->height == 1) {//leaf
-            if(begin <= splitNode->key && splitNode->key <= end)
-                cout << splitNode->key << endl;
+            if(x_begin <= splitNode->key && splitNode->key <= x_end) {
+                cout << splitNode->data.first << " " << splitNode->data.second << endl;
+                result.emplace_back(splitNode->data.first, splitNode->data.second);
+            }
 
         } else {
             auto nodeTmp = splitNode->left;
             while (nodeTmp->height != 1) {
-                if( begin <= nodeTmp->key) {
-                    this->_print_leaf(nodeTmp->right, true);
+                if(x_begin <= nodeTmp->key) {
+                    auto resultLeaf = this->_print_leaf(nodeTmp->right, true);
+                    result.insert(end(result), begin(resultLeaf), end(resultLeaf));
+
                     nodeTmp = nodeTmp->left;
                 } else {
                     nodeTmp = nodeTmp->right;
                 }
             }
-            if(begin <= nodeTmp->key && nodeTmp->key <= end)
-                cout << nodeTmp->key << endl;
+            if(x_begin <= nodeTmp->key && nodeTmp->key <= x_end) {
+                cout << nodeTmp->data.first << " " << nodeTmp->data.second << endl;
+                result.emplace_back(nodeTmp->data.first, nodeTmp->data.second);
+            }
 
             nodeTmp = splitNode->right;
             while (nodeTmp->height != 1) {
-                if( nodeTmp->key <= end) {
-                    this->_print_leaf(nodeTmp->left, true);
+                if(nodeTmp->key <= x_end) {
+                    auto resultLeaf = this->_print_leaf(nodeTmp->left, true);
+                    result.insert(end(result), begin(resultLeaf), end(resultLeaf));
+
                     nodeTmp = nodeTmp->right;
                 } else {
                     nodeTmp = nodeTmp->left;
                 }
             }
-            if(begin <= nodeTmp->key && nodeTmp->key <= end)
-                cout << nodeTmp->key << endl;
+            if(x_begin <= nodeTmp->key && nodeTmp->key <= x_end) {
+                cout << nodeTmp->data.first << " " << nodeTmp->data.second << endl;
+                result.emplace_back(nodeTmp->data.first, nodeTmp->data.second);
+            }
         }
+
+        return result;
     }
 
     Node1D *find_split_node(int begin, int end) {
@@ -185,7 +201,8 @@ private:
             node->right = this->_insert(node->right, key, data);
 
             if (node->left == nullptr)                   //for range tree
-                node->left = Node1D::newNode(node->key, data);
+                //node->left = Node1D::newNode(node->key, data);
+                node->left = Node1D::newNode(node->key, node->data);
 
             node->height = 1 + max(height(node->left), height(node->right));
         }
@@ -331,18 +348,28 @@ private:
         _print_tree(root->left, nro + 4);
     }
 
-    void _print_leaf(Node1D *node, bool new_line=false) {
+    vector<coordinate> _print_leaf(Node1D *node, bool new_line=false) {
+
+        vector<coordinate> result;
 
         if (node != nullptr) {
             if (node->height == 1)
-                if(new_line)
+                if(new_line) {
                     cout << node->data.first << " " << node->data.second << endl;
-                else
+                    result.push_back({node->data.first, node->data.second});
+                } else {
                     cout << node->data.first << " "<<node->data.second << " ";
+                    result.push_back({node->data.first, node->data.second});
+                }
 
-            _print_leaf(node->left, new_line);
-            _print_leaf(node->right, new_line);
+            auto resultL = _print_leaf(node->left, new_line);
+            auto resultR = _print_leaf(node->right, new_line);
+
+            result.insert(end(result), begin(resultL), end(resultL));
+            result.insert(end(result), begin(resultR), end(resultR));
         }
+
+        return result;
     }
 };
 

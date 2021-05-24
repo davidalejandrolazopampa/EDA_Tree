@@ -1,6 +1,4 @@
 
-//#include "avl.h"
-//#include "range_tree.h"
 #include "Components/two_d_range_tree.h"
 #include "datatest/tester.h"
 

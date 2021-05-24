@@ -7,6 +7,10 @@
 
 #include "range_tree.h"
 
+bool cmpCoordinateX (coordinate l, coordinate r) {
+    return (l.first < r.first);
+}
+
 class Node2D {
 public:
     int key;
@@ -31,51 +35,68 @@ class two_d_range_tree {
 public:
     Node2D *root = nullptr;
 
-    void range_query(coordinate begin2d, coordinate end2d) {
+    vector<coordinate> range_query(coordinate begin2d, coordinate end2d) {
+        vector<coordinate> result;
+        vector<coordinate> result1D;
         auto xbegin = begin2d.first;
         auto xend = end2d.first;
-
         auto ybegin = begin2d.second;
         auto yend = end2d.second;
 
         auto splitNode = this->find_split_node(xbegin, xend);
 
+        result.clear();
         if (splitNode->height == 1) {//leaf
-            if(xbegin <= splitNode->data.first && splitNode->data.first <= xend)
+            if (xbegin <= splitNode->data.first && splitNode->data.first <= xend) {
                 cout << splitNode->data.first << " " << splitNode->data.second << endl;
+                result.emplace_back(splitNode->data.first, splitNode->data.second);
+            }
         } else {
             auto nodeTmp = splitNode->left;
             while (nodeTmp->height != 1) {
-                if( xbegin <= nodeTmp->key) {
+                if (xbegin <= nodeTmp->key) {
                     //this->_print_leaf(nodeTmp->right, true);
                     auto t_right = nodeTmp->right->t_associated;
-                    t_right.search1Drange(ybegin, yend);
+                    auto result1DTmp = t_right.search1Drange(ybegin, yend);
+
+                    result1D.insert(end(result1D), begin(result1DTmp), end(result1DTmp));
 
                     nodeTmp = nodeTmp->left;
                 } else {
                     nodeTmp = nodeTmp->right;
                 }
             }
-            if(xbegin <= nodeTmp->data.first && nodeTmp->data.first <= xend
-            && ybegin <= nodeTmp->data.second && nodeTmp->data.second <= yend )
+            if (xbegin <= nodeTmp->data.first && nodeTmp->data.first <= xend
+                && ybegin <= nodeTmp->data.second && nodeTmp->data.second <= yend) {
                 cout << nodeTmp->data.first << " " << nodeTmp->data.second << endl;
+                result.emplace_back(nodeTmp->data.first, nodeTmp->data.second);
+            }
 
             nodeTmp = splitNode->right;
             while (nodeTmp->height != 1) {
-                if( nodeTmp->key <= xend) {
+                if (nodeTmp->key <= xend) {
                     //this->_print_leaf(nodeTmp->left, true);
                     auto t_left = nodeTmp->left->t_associated;
-                    t_left.search1Drange(ybegin, yend);
+                    auto result1DTmp = t_left.search1Drange(ybegin, yend);
+
+                    result1D.insert(end(result1D), begin(result1DTmp), end(result1DTmp));
 
                     nodeTmp = nodeTmp->right;
                 } else {
                     nodeTmp = nodeTmp->left;
                 }
             }
-            if(xbegin <= nodeTmp->data.first && nodeTmp->data.first <= xend
-            && ybegin <= nodeTmp->data.second && nodeTmp->data.second <= yend)
+            if (xbegin <= nodeTmp->data.first && nodeTmp->data.first <= xend
+                && ybegin <= nodeTmp->data.second && nodeTmp->data.second <= yend) {
+
                 cout << nodeTmp->data.first << " " << nodeTmp->data.second << endl;
+                result.emplace_back(nodeTmp->data.first, nodeTmp->data.second);
+            }
         }
+
+        result.insert(end(result), begin(result1D), end(result1D));
+
+        return result;
     }
 
     void build_tree(vector<coordinate> points) {
@@ -103,6 +124,7 @@ private:
     Node2D *build(vector<coordinate> points) {
         rangeTree tree_a;
         Node2D *node;
+        int x_med;
         //Add Y coordinate
         for (auto point: points) {
             auto y = point.second;
@@ -115,15 +137,47 @@ private:
             node = Node2D::newNode(x, point);
             node->t_associated = tree_a;
         } else {
-            auto x_med = this->find_x_median(points);
             vector<coordinate> points_left;
             vector<coordinate> points_right;
 
-            for (auto point: points) {
-                if (point.first <= x_med)
-                    points_left.push_back(point);
-                else
-                    points_right.push_back(point);
+            if ( points.size() <= 3 ) {
+                set<int> tmp;
+
+                for(auto point: points)
+                    tmp.insert(point.first);
+
+                if(tmp.size() == 1) { //duplicates
+                    auto len = points.size();
+
+                    if (len == 2) {
+                        points_left.push_back(points.at(0));
+                        points_right.push_back(points.at(1));
+                    } else if (len == 3){
+                        points_left.push_back(points.at(0));
+                        points_left.push_back(points.at(1));
+                        points_right.push_back(points.at(2));
+                    }
+
+                } else {
+                    x_med = this->find_x_median(points);
+
+                    for (auto point: points) {
+                        if (point.first <= x_med)
+                            points_left.push_back(point);
+                        else
+                            points_right.push_back(point);
+                    }
+                }
+
+            } else {
+                x_med = this->find_x_median(points);
+
+                for (auto point: points) {
+                    if (point.first <= x_med)
+                        points_left.push_back(point);
+                    else
+                        points_right.push_back(point);
+                }
             }
 
             auto node_left = build(points_left);
@@ -139,14 +193,14 @@ private:
         return node;
     }
 
-    void _print_leaf(Node2D *node, bool new_line=false) {
+    void _print_leaf(Node2D *node, bool new_line = false) {
 
         if (node != nullptr) {
             if (node->height == 1)
-                if(new_line)
-                    cout << "("<< node->data.first << "," << node->data.second << ")"<< endl;
+                if (new_line)
+                    cout << "(" << node->data.first << "," << node->data.second << ")" << endl;
                 else
-                    cout << "("<< node->data.first << ","<<node->data.second << ")" << " ";
+                    cout << "(" << node->data.first << "," << node->data.second << ")" << " ";
 
             _print_leaf(node->left, new_line);
             _print_leaf(node->right, new_line);
@@ -154,17 +208,40 @@ private:
     }
 
     int find_x_median(vector<coordinate> points) {
-        auto points_tmp = points;
-        sort(points_tmp.begin(), points_tmp.end());
+        //auto points_tmp = points;
+        //sort(points_tmp.begin(), points_tmp.end(), cmpCoordinateX);
+
+        int n_1;
+        int n_plus_1;
+        set<int> tmp;
+
+        for(auto elem: points) {
+            tmp.insert(elem.first);
+        }
+
+        vector<int> points_tmp(tmp.begin(), tmp.end());
+
         auto n = points_tmp.size();
 
-        if (n % 2) {
-            return (points_tmp.at(n / 2)).first;
+        if (n % 2 != 0) {
+            try {
+                return points_tmp.at(ceil(n / 2));
+            } catch (const std::out_of_range &oor) {
+                std::cerr << "Out of Range error in even" << n << ": " << oor.what() << '\n';
+            }
         } else {
-            auto n_1 = points_tmp.at((n - 1) / 2);
-            auto n_plus_1 = points_tmp.at((n + 1) / 2);
+            try {
+                n_1 = points_tmp.at((n - 1) / 2);
+            } catch (const std::out_of_range &oor) {
+                std::cerr << "Out of Range error in odd 1" << n << ": " << oor.what() << '\n';
+            }
+            try {
+                n_plus_1 = points_tmp.at(n / 2);
+            } catch (const std::out_of_range &oor) {
+                std::cerr << "Out of Range error in odd 2" << n << ": " << oor.what() << '\n';
+            }
 
-            return ((n_1.first + n_plus_1.first) / 2);
+            return ((n_1 + n_plus_1) / 2);
         }
     }
 };

@@ -23,9 +23,15 @@ public:
         auto dataTest = readFromFile(fileNameIn);
 
         tree2D.build_tree(dataTest.points);
-        tree2D.print_leaf();
+        //tree2D.print_leaf();
 
-        tree2D.range_query(dataTest.begin, dataTest.end);
+        auto result = tree2D.range_query(dataTest.begin, dataTest.end);
+
+        cout << " result " << endl;
+        sort(result.begin(), result.end(), cmpCoordinateX);
+        for(auto elem: result) {
+            cout << elem.first << " " << elem.second << endl;
+        }
     }
 
 private:
