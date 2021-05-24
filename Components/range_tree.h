@@ -4,7 +4,8 @@
 
 #ifndef EDA_TREE_RANGE_TREE_H
 #define EDA_TREE_RANGE_TREE_H
-
+#include<iostream>
+#include<fstream>
 #include<bits/stdc++.h>
 
 using namespace std;
@@ -25,7 +26,7 @@ public:
         node->data = data;
         node->left = nullptr;
         node->right = nullptr;
-        node->height = 1; // new node is initially
+        node->height = 1;
         return (node);
     }
 };
@@ -129,14 +130,12 @@ private:
         Node1D *x = y->left;
         Node1D *T2 = x->right;
 
-        // Perform rotation
         x->right = y;
         y->left = T2;
 
         y->height = max(height(y->left), height(y->right)) + 1;
 
         x->height = max(height(x->left), height(x->right)) + 1;
-        // Return new root
 
         return x;
     }
@@ -145,16 +144,13 @@ private:
         Node1D *y = x->right;
         Node1D *T2 = y->left;
 
-        // Perform rotation
         y->left = x;
         x->right = T2;
 
-        // Update heights
         x->height = max(height(x->left), height(x->right)) + 1;
 
         y->height = max(height(y->left), height(y->right)) + 1;
 
-        // Return new root
         return y;
     }
 
@@ -181,52 +177,42 @@ private:
     }
 
     Node1D *_insert(Node1D *node, int key, coordinate data) {
-        // Normal BST rotation
+
         if (node == nullptr)
             return (Node1D::newNode(key, data));
 
         if (key < node->key) {
             node->left = this->_insert(node->left, key, data);
 
-            //node->left->left = newNode(key);
             if (node->left->left == nullptr)
                 node->left->left = Node1D::newNode(key, data);
 
-            //node->left->height = 2;
             node->left->height = 1 + max(height(node->left->left), height(node->left->right));
-            //node->height = 3;
+
             node->height = 1 + max(height(node->left), height(node->right));
 
         } else if (key >= node->key) {
             node->right = this->_insert(node->right, key, data);
 
-            if (node->left == nullptr)                   //for range tree
-                //node->left = Node1D::newNode(node->key, data);
+            if (node->left == nullptr)
                 node->left = Node1D::newNode(node->key, node->data);
 
             node->height = 1 + max(height(node->left), height(node->right));
         }
 
-        // Get the balance factor of this ancestor node to check whether this node became unbalanced
         int balance = getBalance(node);
 
-        // When unbalanced
-        // Case 1: Left Left Case
-        //if (balance > 1 && key < node->left->key)
         if (balance > 1 && key <= node->left->key)
             return rightRotation(node);
 
-        // Case 2: Right Right Case
         if (balance < -1 && key > node->right->key)
             return leftRotation(node);
 
-        // Case 3: Left Right Case
         if (balance > 1 && key > node->left->key) {
             node->left = leftRotation(node->left);
             return rightRotation(node);
         }
 
-        // Case 4: Right Left Case
         if (balance < -1 && key < node->right->key) {
             node->right = rightRotation(node->right);
             return leftRotation(node);

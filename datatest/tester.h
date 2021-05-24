@@ -23,15 +23,27 @@ public:
         auto dataTest = readFromFile(fileNameIn);
 
         tree2D.build_tree(dataTest.points);
-        //tree2D.print_leaf();
 
         auto result = tree2D.range_query(dataTest.begin, dataTest.end);
-
-        cout << " result " << endl;
+        cout << " Ordered result " << endl;
         sort(result.begin(), result.end(), cmpCoordinateX);
+
+        //Creacion del archivo
+        ofstream archivo;
+        string NombreArchivo,newName;
+        cout<<"Escriba el nombre de como se llamara su archivo:  ";
+        getline(cin,NombreArchivo);
+        newName = "../Result/"+NombreArchivo;
+        archivo.open(newName.c_str(),ios::out);
+        if(archivo.fail()){cout<<"No se encontro el archivo";exit(1);}
+
         for(auto elem: result) {
             cout << elem.first << " " << elem.second << endl;
+            archivo<< elem.first << " " << elem.second << endl;
         }
+        cout << " Text created address : '../Result/"<<NombreArchivo<<"'"<<endl;
+        archivo.close();
+
     }
 
 private:
@@ -60,7 +72,6 @@ private:
             getline(file, linea);
             auto coor = getCoord(linea);
             data.points.push_back(coor);
-            //cout << coor.first << " " << coor.second << endl;
         }
 
         if (file.is_open())
